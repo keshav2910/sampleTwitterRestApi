@@ -79,4 +79,21 @@ public class TweetController{
         }
         return new ResponseEntity<List<Tweet>>(tweetList, statusCode);
     }
+
+    @RequestMapping(value="/tweets", method=RequestMethod.GET, params = {"followed_by_user"})
+    public  ResponseEntity<List<Tweet>> getFeedByUserId(@RequestParam int followed_by_user){
+        List<Tweet> tweetList =  null;
+        HttpStatus statusCode;
+        try {
+            tweetList = tweetDao.getFeedByUserId(followed_by_user);
+            if(tweetList.size() == 0)
+                statusCode = HttpStatus.NOT_FOUND;
+            else
+                statusCode = HttpStatus.OK;
+        }catch(RuntimeException re){
+            logger.error("Some error occurred", re);
+            statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
+        }
+        return new ResponseEntity<List<Tweet>>(tweetList, statusCode);
+    }
 }

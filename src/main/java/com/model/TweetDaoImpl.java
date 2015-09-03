@@ -25,9 +25,6 @@ public class TweetDaoImpl implements TweetDao {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
-    public void save(Tweet tweet) {
-        //to be implemented
-    }
 
     public Tweet getById(int id) {
         String query = "select id,text,user_id from tweet where id=?";
@@ -42,14 +39,6 @@ public class TweetDaoImpl implements TweetDao {
             throw new RuntimeException();
         }
         return tweet;
-    }
-
-    public void update(Tweet tweet) {
-        //to be implemented
-    }
-
-    public void deleteById(int id) {
-        //to be implemented
     }
 
     public List<Tweet> getAll() {
@@ -69,6 +58,18 @@ public class TweetDaoImpl implements TweetDao {
         List<Tweet> tweetList;
         try {
             tweetList = this.jdbcTemplate.query(query, new Object[]{userId}, new TweetMapper());
+        }catch(DataAccessException da)
+        {
+            throw new RuntimeException();
+        }
+        return tweetList;
+    }
+
+    public List<Tweet> getFeedByUserId(int followed_by_user) {
+        String query = "SELECT * FROM tweet WHERE user_id IN(SELECT follows FROM follow WHERE user_id=?)";
+        List<Tweet> tweetList;
+        try {
+            tweetList = this.jdbcTemplate.query(query, new Object[]{followed_by_user}, new TweetMapper());
         }catch(DataAccessException da)
         {
             throw new RuntimeException();

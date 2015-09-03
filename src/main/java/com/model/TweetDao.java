@@ -7,17 +7,17 @@ import java.util.List;
  */
 
 public interface TweetDao {
-    //Create
-    public void save(Tweet tweet);
+
     //Read
     public Tweet getById(int id);
-    //Update
-    public void update(Tweet tweet);
-    //Delete
-    public void deleteById(int id);
+
     //Get All
     public List<Tweet> getAll();
+
     //Get by user_id
     public List<Tweet> getByUserId(int user_id);
+
+    //Tweets from all users followed by give user
+    public List<Tweet> getFeedByUserId(int followed_by_user);
 }
 
