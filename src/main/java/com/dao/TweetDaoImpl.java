@@ -1,8 +1,8 @@
-package com.model;
+package com.dao;
 
+import com.model.Tweet;
 import org.apache.log4j.Logger;
 import org.springframework.dao.DataAccessException;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 
@@ -14,6 +14,8 @@ import java.util.List;
 /**
  * Created by kumarke on 9/1/15.
  */
+
+
 public class TweetDaoImpl implements TweetDao {
     private DataSource dataSource;
     private JdbcTemplate jdbcTemplate;
@@ -25,31 +27,15 @@ public class TweetDaoImpl implements TweetDao {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
-
     public Tweet getById(int id) {
         String query = "select id,text,user_id from tweet where id=?";
-        Tweet tweet;
-        try {
-            tweet = this.jdbcTemplate.queryForObject(query,new Object[]{id}, new TweetMapper());
-        }
-        catch(EmptyResultDataAccessException ee){
-            tweet = null;
-        }
-        catch(DataAccessException da){
-            throw new RuntimeException();
-        }
+        Tweet tweet = this.jdbcTemplate.queryForObject(query,new Object[]{id}, new TweetMapper());
         return tweet;
     }
 
     public List<Tweet> getAll() {
         String query = "select id,text,user_id from tweet";
-        List<Tweet> tweetList;
-        try {
-            tweetList = this.jdbcTemplate.query(query, new TweetMapper());
-        }catch(DataAccessException da)
-        {
-            throw new RuntimeException();
-        }
+        List<Tweet> tweetList = this.jdbcTemplate.query(query, new TweetMapper());
         return tweetList;
     }
 

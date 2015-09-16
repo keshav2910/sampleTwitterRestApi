@@ -1,13 +1,12 @@
 package com.controller;
 
 import com.model.Tweet;
-import com.model.TweetDao;
+import com.service.TweetManager;
 import org.apache.log4j.Logger;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 
@@ -16,81 +15,57 @@ import java.util.List;
  */
 
 @RestController
-public class TweetController{
+public class TweetController extends BaseController{
 
     private ClassPathXmlApplicationContext ctx;
-    private TweetDao tweetDao;
+
+    private TweetManager tweetManager ;
+
     private static final Logger logger = Logger.getLogger(TweetController.class);
 
-    public TweetController() {
+    TweetController(){
         ctx = new ClassPathXmlApplicationContext("/spring-context.xml");
-        this.tweetDao = (TweetDao)ctx.getBean("tweetDao");
+        tweetManager = (TweetManager)ctx.getBean("tweetManager");
     }
 
-    @RequestMapping(value="/tweets", method=RequestMethod.GET)
-    public ResponseEntity<List<Tweet>> getTweets(){
-        List<Tweet> tweets = null;
+    @RequestMapping(value = "/tweets", method = RequestMethod.GET)
+    public List<Tweet> getTweets() {
+       return tweetManager.getAll();
+    }
+
+    @RequestMapping(value = "/tweets/{id}", method = RequestMethod.GET)
+    public Tweet getTweetById(@PathVariable int id) {
+        return tweetManager.getById(id);
+    }
+
+    @RequestMapping(value = "/tweets", method = RequestMethod.GET, params = {"user_id"})
+    public ResponseEntity<List<Tweet>> getTweetByUserId(@RequestParam int user_id) {
+        List<Tweet> tweetList = null;
         HttpStatus statusCode;
         try {
-            tweets = tweetDao.getAll();
-            if(tweets.size()==0)
+            tweetList = tweetManager.getByUserId(user_id);
+            if (tweetList.isEmpty())
                 statusCode = HttpStatus.NOT_FOUND;
             else
                 statusCode = HttpStatus.OK;
-        }catch(RuntimeException re)
-        {
-            logger.error("Some error occurred", re);
-            statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
-        }
-        return new ResponseEntity<List<Tweet>>(tweets,statusCode);
-
-    }
-
-    @RequestMapping(value="/tweet/{id}", method=RequestMethod.GET)
-    public ResponseEntity<Tweet> getTweetById(@PathVariable int id){
-        Tweet tweet = null;
-        HttpStatus statusCode;
-        try{
-            tweet = tweetDao.getById(id);
-            if(tweet == null)
-                statusCode = HttpStatus.NOT_FOUND;
-            else
-                statusCode = HttpStatus.OK;
-        }catch(RuntimeException re){
-            logger.error("Some error occurred", re);
-            statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
-        }
-        return new ResponseEntity<Tweet>(tweet,statusCode);
-    }
-
-    @RequestMapping(value="/tweets", method=RequestMethod.GET,params = {"user_id"})
-    public ResponseEntity<List<Tweet>>  getTweetByUserId(@RequestParam int user_id){
-        List<Tweet> tweetList =  null;
-        HttpStatus statusCode;
-        try {
-            tweetList = tweetDao.getByUserId(user_id);
-            if(tweetList.size() == 0)
-                statusCode = HttpStatus.NOT_FOUND;
-            else
-                statusCode = HttpStatus.OK;
-        }catch(RuntimeException re){
+        } catch (RuntimeException re) {
             logger.error("Some error occurred", re);
             statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
         }
         return new ResponseEntity<List<Tweet>>(tweetList, statusCode);
     }
 
-    @RequestMapping(value="/tweets", method=RequestMethod.GET, params = {"followed_by_user"})
-    public  ResponseEntity<List<Tweet>> getFeedByUserId(@RequestParam int followed_by_user){
-        List<Tweet> tweetList =  null;
+    @RequestMapping(value = "/tweets", method = RequestMethod.GET, params = {"followed_by_user"})
+    public ResponseEntity<List<Tweet>> getFeedByUserId(@RequestParam int followed_by_user) {
+        List<Tweet> tweetList = null;
         HttpStatus statusCode;
         try {
-            tweetList = tweetDao.getFeedByUserId(followed_by_user);
-            if(tweetList.size() == 0)
+            tweetList = tweetManager.getFeedByUserId(followed_by_user);
+            if (tweetList.size() == 0)
                 statusCode = HttpStatus.NOT_FOUND;
             else
                 statusCode = HttpStatus.OK;
-        }catch(RuntimeException re){
+        } catch (RuntimeException re) {
             logger.error("Some error occurred", re);
             statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
         }

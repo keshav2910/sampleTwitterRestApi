@@ -1,4 +1,5 @@
-package com.model;
+package com.dao;
+
 
 import java.util.List;
 
@@ -6,6 +7,7 @@ import java.util.List;
  * Created by kumarke on 9/3/15.
  */
 public class UserDaoImpl implements UserDao {
+
     public UserDao getById(int id) {
         return null;
     }

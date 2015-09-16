@@ -1,13 +1,16 @@
-package com.model;
+package com.service;
+
+import com.model.Tweet;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 /**
- * Created by kumarke on 9/1/15.
+ * Created by kumarke on 9/14/15.
  */
 
-public interface TweetDao {
 
+public interface TweetManager {
     //Read
     public Tweet getById(int id);
 
@@ -20,4 +23,3 @@ public interface TweetDao {
     //Tweets from all users followed by give user
     public List<Tweet> getFeedByUserId(int followed_by_user);
 }
-
